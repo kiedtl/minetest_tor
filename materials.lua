@@ -1,7 +1,7 @@
 -- TODO:
--- * Subspace Ion Thruster
--- * Subspace Ion Steering
--- * Composite Structure
+-- x Subspace Ion Thruster
+-- * Subspace Antigrav
+-- x Composite Structure
 -- * Borium-reinforced Glass
 -- * Spacecannon
 --   * Pass damage type to on_blast
@@ -20,7 +20,7 @@ minetest.register_node("tor:subspace_ion_thruster", {
     paramtype2 = "facedir",
     legacy_facedir_simple = true, -- No clue what this is for
     spacecannon_armor = { kinetic = 90, shearing = 90 },
-    spacecannon_resilience = 4,
+    spacecannon_resilience = 3,
     drop = "tor:subspace_ion_thruster",
     on_place = minetest.rotate_node,
     connects_to = {"group:technic_hv_cable"},
@@ -41,6 +41,7 @@ minetest.register_node("tor:subspace_ion_thruster", {
 
         if eu_input >= demand then
             technic.swap_node(coord, "tor:subspace_ion_thruster_active")
+            return
         end
 
         local infotext =
@@ -60,7 +61,7 @@ minetest.register_node("tor:subspace_ion_thruster_active", {
     paramtype2 = "facedir",
     legacy_facedir_simple = true, -- No clue what this is for
     spacecannon_armor = { kinetic = 90, shearing = 90 },
-    spacecannon_resilience = 4,
+    spacecannon_resilience = 3,
     drop = "tor:subspace_ion_thruster",
     on_place = minetest.rotate_node,
     connects_to = {"group:technic_hv_cable"},
@@ -68,6 +69,7 @@ minetest.register_node("tor:subspace_ion_thruster_active", {
     -- is rotated. So we just allow connections from any side.
     --connect_sides = {"bottom"},
     connect_sides = {"bottom", "top", "left", "right", "front", "back"},
+    technic_disabled_machine_name = "tor:subspace_ion_thruster",
     on_construct = function(coord)
         local meta = minetest.get_meta(coord)
         meta:set_int("HV_EU_demand", 200)
@@ -81,6 +83,7 @@ minetest.register_node("tor:subspace_ion_thruster_active", {
 
         if eu_input < demand then
             technic.swap_node(coord, "tor:subspace_ion_thruster")
+            return
         end
 
         local infotext =
@@ -90,6 +93,26 @@ minetest.register_node("tor:subspace_ion_thruster_active", {
     end,
 })
 technic.register_machine("HV", "tor:subspace_ion_thruster", technic.receiver)
+technic.register_machine("HV", "tor:subspace_ion_thruster_active", technic.receiver)
+
+-- Utility nodes.
+minetest.register_node("tor:borium_hv_cable", {
+    description = "Borium-reinforced HV Cable",
+    tiles = { "tor_borium_hv_cable.png" },
+    groups = { cracky = 2, technic_hv_cable = 1 },
+    spacecannon_armor = { thermal = 75, kinetic = 60, shearing = 90 },
+    drop = "tor:borium_hv_cable",
+    connects_to = {"group:technic_hv_cable", "group:technic_hv", "group:technic_all_tiers"},
+    on_construct = function(coord)
+        local meta = minetest.get_meta(coord)
+        meta:set_float("integrity", 4)
+        technic.network_node_on_placenode(coord, {"HV"}, "tor:borium_hv_cable")
+    end,
+    on_destruct = function(coord)
+        technic.network_node_on_dignode(coord, {"HV"}, "tor:borium_hv_cable")
+    end,
+    on_blast = tor.logic.on_blast,
+})
 
 -- Basic armor.
 minetest.register_node("tor:borium_arm", {
