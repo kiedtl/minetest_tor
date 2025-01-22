@@ -96,7 +96,7 @@ technic.register_machine("HV", "tor:subspace_ion_thruster", technic.receiver)
 technic.register_machine("HV", "tor:subspace_ion_thruster_active", technic.receiver)
 
 -- Utility nodes.
-minetest.register_node("tor:borium_hv_cable", {
+technic.register_cable("tor:borium_hv_cable", {
     description = "Borium-reinforced HV Cable",
     tiles = { "tor_borium_hv_cable.png" },
     groups = { cracky = 2, technic_hv_cable = 1 },
@@ -106,12 +106,18 @@ minetest.register_node("tor:borium_hv_cable", {
     on_construct = function(coord)
         local meta = minetest.get_meta(coord)
         meta:set_float("integrity", 4)
-        technic.network_node_on_placenode(coord, {"HV"}, "tor:borium_hv_cable")
+        technic.place_network_node(coord, {"HV"}, "tor:borium_hv_cable")
     end,
     on_destruct = function(coord)
-        technic.network_node_on_dignode(coord, {"HV"}, "tor:borium_hv_cable")
+        technic.remove_network_node(coord, {"HV"}, "tor:borium_hv_cable")
     end,
     on_blast = tor.logic.on_blast,
+
+    -- register_table specific stuff
+    size = 0.5,
+    tier = "HV",
+    wield_image = false,
+    inventory_image = false,
 })
 
 -- Basic armor.
