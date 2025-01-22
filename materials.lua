@@ -1,4 +1,4 @@
--- TODO:
+-- TODO (drones):
 -- x Subspace Ion Thruster
 -- * Subspace Antigrav
 -- x Composite Structure
@@ -6,6 +6,13 @@
 -- x Borium-reinforced Cable
 -- x Atomic Flux Cell
 -- * Electric Routing Device
+--
+-- TODO (garrisons):
+-- * Ultra high voltage (UHV) tier
+--   * Cables, reinforced cable
+--   * Supply converter (for player)
+--
+-- TODO (misc):
 -- * Spacecannon
 --   * Pass damage type to on_blast
 --   * spacecannon_armor support
@@ -15,7 +22,7 @@
 -- Non-idling demand is higher, but we don't tell the player that.
 --
 minetest.register_node("tor:subspace_ion_thruster", {
-    description = "Subspace Ion Thruster",
+    description = "Subspace Ion Thruster (alien)",
     drawtype = "mesh",
     mesh = "tor_subspace_ion_thruster.obj",
     tiles = { "tor_subspace_ion_thruster.png" },
@@ -54,7 +61,7 @@ minetest.register_node("tor:subspace_ion_thruster", {
     end,
 })
 minetest.register_node("tor:subspace_ion_thruster_active", {
-    description = "Subspace Ion Thruster (Idling)",
+    description = "Subspace Ion Thruster (Idling) (alien)",
     drawtype = "mesh",
     mesh = "tor_subspace_ion_thruster.obj",
     tiles = { "tor_subspace_ion_thruster_active.png" },
@@ -101,7 +108,7 @@ technic.register_machine("HV", "tor:subspace_ion_thruster_active", technic.recei
 -- Power.
 local AFC_SUPPLY         = 1500
 minetest.register_node("tor:atomic_flux_cell", {
-    description = "Atomic Flux Cell",
+    description = "Atomic Flux Cell (alien)",
     drawtype = "mesh",
     mesh = "tor_atomic_flux_cell.obj",
     tiles = { "tor_atomic_flux_cell.png" },
@@ -132,7 +139,7 @@ technic.register_machine("HV", "tor:atomic_flux_cell", technic.producer)
 
 -- Utility nodes.
 technic.register_cable("tor:borium_hv_cable", {
-    description = "Borium-reinforced HV Cable",
+    description = "Borium-reinforced HV Cable (alien)",
     tiles = { "tor_borium_hv_cable.png" },
     groups = { cracky = 2, technic_hv_cable = 1 },
     spacecannon_armor = { thermal = 75, kinetic = 60, shearing = 90 },
@@ -159,7 +166,7 @@ technic.register_cable("tor:borium_hv_cable", {
 
 -- Basic armor.
 minetest.register_node("tor:borium_arm", {
-    description = "Borium Plating",
+    description = "Borium Plating (alien)",
     tiles = { "tor_borium_arm.png" },
     drop = "tor:borium_arm",
     groups = { cracky = 1 },
@@ -172,7 +179,7 @@ minetest.register_node("tor:borium_arm", {
 })
 
 minetest.register_node("tor:lgt_borium_arm", {
-    description = "Lgt. Borium Plating",
+    description = "Lgt. Borium Plating (alien)",
     tiles = { "tor_lgt_borium_arm.png" },
     drop = "tor:lgt_borium_arm",
     groups = { cracky = 1 },
@@ -186,7 +193,7 @@ minetest.register_node("tor:lgt_borium_arm", {
 
 -- Structural building blocks.
 minetest.register_node("tor:composite_block", {
-    description = "Tor Composite Block",
+    description = "Tor Composite Block (alien)",
     tiles = { "tor_composite_block.png" },
     drop = "tor:composite_block",
     groups = { cracky = 2 },
@@ -195,7 +202,7 @@ minetest.register_node("tor:composite_block", {
 -- Not needed for drone, will complete later.
 --
 --minetest.register_node("tor:borium_regen", {
---    description = "Borium Energy Diffuser",
+--    description = "Borium Energy Diffuser (alien)",
 --    tiles = {
 --        "tor_borium_regen.png",
 --        "tor_borium_regen.png",
