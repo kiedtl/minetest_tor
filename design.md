@@ -97,6 +97,7 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
     - Antimatter Reactor: 30kEU, 1 node
       - Generates large amounts of heat? Probably yeah, if I can get the heat
         mechanics to work.
+      - Explodes when destroyed (by blast).
     - Fuel: Do we need this? Antimatter fuel cell? If I implement proper fuel
       usage (i.e. appropriate amount of fuel is used only if output is used),
       then could be a good way to not make this OP. Output could be increased
@@ -145,6 +146,7 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
     network without properly powering down or unable to meet demand, will
     explode (10 intensity, 10 radius).
     - Leave some graviton flux fluid? Would be fun. What effects?
+    - Explodes when destroyed (by blast).
   - Weeping Orthire nodes as batteries.
     - Very difficult to mine, only drops the node some of the time, otherwise
       drops regular orthire (which looks cool maybe but has no use).
@@ -194,6 +196,7 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
     demand, will explode (50 intensity, 15 radius).
     - Leave some graviton flux fluid like the other reactor?
     - High heat dissipation requirements.
+  - Explodes when destroyed (by blast).
 - Weeping Orthire batteries arrays.
 - Warp Drive
   - Flavor jumpdrive, broken.
@@ -205,3 +208,9 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
     preserved compared to the alien cadavers, and advanced dating techniques
     have allowed us to conclude that the alien ships began arriving here a mere
     1000 years ago -- many thousands of years sooner than once thought."
+- Phasic honor device
+  - Self-destructor, nestled in with vital cable systems (but away from power
+    system, which should explode anyway).
+  - Absolutely massive low-intensity explosion (2 intensity, 18 radius).
+  - Player better be careful if they have penetrating weapons or if they're just
+    planning to blast the ship into submission.
