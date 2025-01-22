@@ -1,25 +1,103 @@
 -- TODO:
--- * Subspace Nuclear Thruster
--- * Subspace Nuclear Steering
+-- * Subspace Ion Thruster
+-- * Subspace Ion Steering
 -- * Composite Structure
 -- * Borium-reinforced Glass
 -- * Spacecannon
 --   * Pass damage type to on_blast
+--   * spacecannon_armor support
+--   * minetest.rotate_node
+
+-- Engines. Flavor.
+-- Non-idling demand is 600, but we don't tell the player that.
+--
+minetest.register_node("tor:subspace_ion_thruster", {
+    description = "Subspace Ion Thruster",
+    drawtype = "mesh",
+    mesh = "tor_subspace_ion_thruster.obj",
+    tiles = { "tor_subspace_ion_thruster.png" },
+    groups = { cracky = 2, oddly_breakable_by_hand = 1, technic_hv = 1, technic_machine = 1 },
+    paramtype2 = "facedir",
+    legacy_facedir_simple = true, -- No clue what this is for
+    spacecannon_armor = { kinetic = 90, shearing = 90 },
+    spacecannon_resilience = 4,
+    drop = "tor:subspace_ion_thruster",
+    on_place = minetest.rotate_node,
+    connects_to = {"group:technic_hv_cable"},
+    -- Minetest engine is too retarded to flip these as needed for when the node
+    -- is rotated. So we just allow connections from any side.
+    --connect_sides = {"bottom"},
+    connect_sides = {"bottom", "top", "left", "right", "front", "back"},
+    on_construct = function(coord)
+        local meta = minetest.get_meta(coord)
+        meta:set_int("HV_EU_demand", 200)
+        meta:set_int("HV_EU_input", 0)
+        meta:set_string("infotext", "")
+    end,
+    technic_run = function(coord)
+        local meta = minetest.get_meta(coord)
+        local eu_input = meta:get_int("HV_EU_input")
+        local demand = meta:get_int("HV_EU_demand")
+
+        if eu_input >= demand then
+            technic.swap_node(coord, "tor:subspace_ion_thruster_active")
+        end
+
+        local infotext =
+            "Power: " .. eu_input .. "/" .. demand .. "\n" ..
+            "Unpowered.\n"
+        meta:set_string("infotext", infotext)
+    end,
+})
+minetest.register_node("tor:subspace_ion_thruster_active", {
+    description = "Subspace Ion Thruster (Idling)",
+    drawtype = "mesh",
+    mesh = "tor_subspace_ion_thruster.obj",
+    tiles = { "tor_subspace_ion_thruster_active.png" },
+    groups = { cracky = 2, oddly_breakable_by_hand = 1, technic_hv = 1, technic_machine = 1 },
+    light_source = 12,
+    paramtype = "light",
+    paramtype2 = "facedir",
+    legacy_facedir_simple = true, -- No clue what this is for
+    spacecannon_armor = { kinetic = 90, shearing = 90 },
+    spacecannon_resilience = 4,
+    drop = "tor:subspace_ion_thruster",
+    on_place = minetest.rotate_node,
+    connects_to = {"group:technic_hv_cable"},
+    -- Minetest engine is too retarded to flip these as needed for when the node
+    -- is rotated. So we just allow connections from any side.
+    --connect_sides = {"bottom"},
+    connect_sides = {"bottom", "top", "left", "right", "front", "back"},
+    on_construct = function(coord)
+        local meta = minetest.get_meta(coord)
+        meta:set_int("HV_EU_demand", 200)
+        meta:set_int("HV_EU_input", 0)
+        meta:set_string("infotext", "")
+    end,
+    technic_run = function(coord)
+        local meta = minetest.get_meta(coord)
+        local eu_input = meta:get_int("HV_EU_input")
+        local demand = meta:get_int("HV_EU_demand")
+
+        if eu_input < demand then
+            technic.swap_node(coord, "tor:subspace_ion_thruster")
+        end
+
+        local infotext =
+            "Power: " .. eu_input .. "/" .. demand .. "\n" ..
+            "Idling (engine is disabled remotely).\n"
+        meta:set_string("infotext", infotext)
+    end,
+})
+technic.register_machine("HV", "tor:subspace_ion_thruster", technic.receiver)
 
 -- Basic armor.
 minetest.register_node("tor:borium_arm", {
     description = "Borium Plating",
-    tiles = {
-        "tor_borium_arm.png",
-        "tor_borium_arm.png",
-        "tor_borium_arm.png",
-        "tor_borium_arm.png",
-        "tor_borium_arm.png",
-        "tor_borium_arm.png",
-    },
+    tiles = { "tor_borium_arm.png" },
     drop = "tor:borium_arm",
     groups = { cracky = 1 },
-    spacecannon_armor = { thermal = 60, kinetic = 60 },
+    spacecannon_armor = { thermal = 50, kinetic = 40, shearing = 70 },
     on_construct = function(coord)
         local meta = minetest.get_meta(coord)
         meta:set_float("integrity", 8)
@@ -29,17 +107,10 @@ minetest.register_node("tor:borium_arm", {
 
 minetest.register_node("tor:lgt_borium_arm", {
     description = "Lgt. Borium Plating",
-    tiles = {
-        "tor_lgt_borium_arm.png",
-        "tor_lgt_borium_arm.png",
-        "tor_lgt_borium_arm.png",
-        "tor_lgt_borium_arm.png",
-        "tor_lgt_borium_arm.png",
-        "tor_lgt_borium_arm.png",
-    },
+    tiles = { "tor_lgt_borium_arm.png" },
     drop = "tor:lgt_borium_arm",
     groups = { cracky = 1 },
-    spacecannon_armor = { thermal = 70, kinetic = 70 },
+    spacecannon_armor = { thermal = 70, kinetic = 40, shearing = 70 },
     on_construct = function(coord)
         local meta = minetest.get_meta(coord)
         meta:set_float("integrity", 5)
@@ -50,14 +121,7 @@ minetest.register_node("tor:lgt_borium_arm", {
 -- Structural building blocks.
 minetest.register_node("tor:composite_block", {
     description = "Tor Composite Block",
-    tiles = {
-        "tor_composite_block.png",
-        "tor_composite_block.png",
-        "tor_composite_block.png",
-        "tor_composite_block.png",
-        "tor_composite_block.png",
-        "tor_composite_block.png",
-    },
+    tiles = { "tor_composite_block.png" },
     drop = "tor:composite_block",
     groups = { cracky = 2 },
 })
@@ -77,5 +141,6 @@ minetest.register_node("tor:composite_block", {
 --    drop = "tor:borium_regen",
 --    groups = { cracky = 1 },
 --    spacecannon_armor = { th = 80, ki = 80 },
+--    paramtype2 = "facedir",
 --})
 --technic.register_machine("HV", "tor:borium_regen", technic:receiver)
