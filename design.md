@@ -195,3 +195,13 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
     - Leave some graviton flux fluid like the other reactor?
     - High heat dissipation requirements.
 - Weeping Orthire batteries arrays.
+- Warp Drive
+  - Flavor jumpdrive, broken.
+- Adv. Intelligence Center
+  - Flavor. Like the ones in command drones. Organic material has decayed.
+  - "Like the low-powered versions, this advanced artificial intelligence device
+    appears to have incorporated significant amounts of organic material, which
+    have long since decayed away. However, its remains have been very well
+    preserved compared to the alien cadavers, and advanced dating techniques
+    have allowed us to conclude that the alien ships began arriving here a mere
+    1000 years ago -- many thousands of years sooner than once thought."
