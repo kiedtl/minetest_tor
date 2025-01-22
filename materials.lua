@@ -3,13 +3,16 @@
 -- * Subspace Antigrav
 -- x Composite Structure
 -- * Borium-reinforced Glass
+-- x Borium-reinforced Cable
+-- x Atomic Flux Cell
+-- * Electric Routing Device
 -- * Spacecannon
 --   * Pass damage type to on_blast
 --   * spacecannon_armor support
 --   * minetest.rotate_node
 
 -- Engines. Flavor.
--- Non-idling demand is 600, but we don't tell the player that.
+-- Non-idling demand is higher, but we don't tell the player that.
 --
 minetest.register_node("tor:subspace_ion_thruster", {
     description = "Subspace Ion Thruster",
@@ -30,7 +33,7 @@ minetest.register_node("tor:subspace_ion_thruster", {
     connect_sides = {"bottom", "top", "left", "right", "front", "back"},
     on_construct = function(coord)
         local meta = minetest.get_meta(coord)
-        meta:set_int("HV_EU_demand", 200)
+        meta:set_int("HV_EU_demand", 60)
         meta:set_int("HV_EU_input", 0)
         meta:set_string("infotext", "")
     end,
@@ -95,6 +98,38 @@ minetest.register_node("tor:subspace_ion_thruster_active", {
 technic.register_machine("HV", "tor:subspace_ion_thruster", technic.receiver)
 technic.register_machine("HV", "tor:subspace_ion_thruster_active", technic.receiver)
 
+-- Power.
+local AFC_SUPPLY         = 1500
+minetest.register_node("tor:atomic_flux_cell", {
+    description = "Atomic Flux Cell",
+    drawtype = "mesh",
+    mesh = "tor_atomic_flux_cell.obj",
+    tiles = { "tor_atomic_flux_cell.png" },
+    groups = {
+        cracky = 2, oddly_breakable_by_hand = 2,
+        technic_hv = 1, technic_machine = 1, radioactive = 1,
+    },
+    light_source = 5,
+    paramtype = "light",
+    paramtype2 = "facedir",
+    -- Deliberately didn't put any resilience
+    drop = "tor:atomic_flux_cell",
+    connects_to = {"group:technic_hv_cable"},
+    connect_sides = {"bottom", "back" },
+    on_construct = function(coord)
+        local meta = minetest.get_meta(coord)
+        meta:set_int("HV_EU_supply", AFC_SUPPLY)
+    end,
+    technic_run = function(coord)
+        local meta = minetest.get_meta(coord)
+        local infotext =
+            "Tor Atomic Flux Cell (active)\n" ..
+            "Generating: " .. AFC_SUPPLY
+        meta:set_string("infotext", infotext)
+    end,
+})
+technic.register_machine("HV", "tor:atomic_flux_cell", technic.producer)
+
 -- Utility nodes.
 technic.register_cable("tor:borium_hv_cable", {
     description = "Borium-reinforced HV Cable",
@@ -114,6 +149,8 @@ technic.register_cable("tor:borium_hv_cable", {
     on_blast = tor.logic.on_blast,
 
     -- register_table specific stuff
+    paramtype = "", -- Otherwise this function sets it to "light"
+    sunlight_propagates = false,
     size = 0.5,
     tier = "HV",
     wield_image = false,
