@@ -127,13 +127,22 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
 - Potential Cannon: thermal, 175% intensity of Nova Cannon, high fire rate
   (i.e. high demand and high storage), higher energy requirements. Zero
   salvage (maybe no salvage is too cruel for player? :P)
+  - Mob version: high knockback.
 - Entire ecosystem going on inside. Many more engineers, robotic assistants,
   cleaners, etc.
 - Peacekeepers, Grunts, Enforcers, Golden Guards.
 - Peacemaker:
+  - Broadcast messages (see exoskeleton section):
+    - "EXTERMINATE EXTERMINATE EXTERMINAAAATE"
+    - lol
+    - On death: "MEEERCYYYYY"
   - Electromagnetic projectile.
   - Hovers/flys. Scans player.
 - Companion:
+  - Broadcast messages (see exoskeleton section):
+    - "I do not recognize your ID. Take me to your commander at once."
+    - "I have been waiting for an eternity. I do not know who you are."
+    - On death: "My master will return."
   - Extremely dangerous. Robotic companion of the Tor.
   - Dual-wielding shearguns. Low damage (just enough to hurt lava armor a bit)
     but high fire rate.
@@ -165,12 +174,83 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
     - Separates networks, prevents weeping orthire battery arrays from
       being over-demanded (doesn't prevent them from being over-drained
       though). Demand is capped at maximum of 4 million EU.
+- Will also have "prison" and "experiment areas". With animal and NPC remains.
+  - Prisons are on pedestals in lighted room, with reinforced glass. Animal
+    prisons will have a single square with dead grass on it.
 
 ## Warships
 - The true place to find loot.
 - Alien remains, highest chance of finding an exoskeleton here.
-  - Also the Burning Lance, very high burn and fleshy damage.
-- Shear Cannons on medium ships.
+  - Exoskeleton: jump bonus, speed bonus (somewhat less than lava boots), water
+    breathing, negates realistic suffocation in vacuum, takes up all slots
+    (including shield and head), no armor, very fragile. Radiation protection.
+    Player can now get over heights of <=1.0. Running speed is much higher.
+    - Combat Exoskeleton: as above, but very rare, has full vacuum breathing,
+      and very high armor. Only item in game to have decent quantum shearing
+      protection (50%?)
+    - Unsure if possible: mitigate fall damage somewhat? i.e. change threshold
+      from 3 nodes to 4 or something.
+    - HUD: can get status on armor.
+      - After putting on, logging in, or waking up:
+        - "Exoskeleton activated."
+        - "Attempted to connect to local relay unit..."
+        - "Failure: local quantum entanglement device is not responding."
+        - "Attempting to contact ship..."
+        - "Timed out."
+      - "Exoskeleton integrity is at optimal levels."
+      - "Exoskeleton integrity is at suboptimal levels."
+      - "Exoskeleton integrity is compromised. Retreat advised."
+    - Exoskeleton systems shut down as integrity goes down.
+      - 40%: vacuum breathing stops. realistic suffocation is negated.
+        - "Pressurization ability disabled. Maintenance required."
+      - 30%: water breathing stops.
+        - "Oxygen mask compromise. Maintenance required."
+      - 25%: jump and speed bonus halved.
+        - "Systems at suboptimal level."
+      - 20%: thermal resistance halved.
+        - "Thermal protection systems at suboptimal level."
+      - 10%: jump and speed bonus stops.
+        - "Complete destabilization imminent, emergency maneuvers strongly advised."
+      - Note: kinetic resistance never goes away, as does non-realistic vacuum
+        suffocation. This is intentional, it's an inherent part of the
+        exoskeleton design, i.e. a passive feature.
+    - Can now get "feedback" from garrison and fortress control nodes, that show
+      up on HUD. i.e. a live log on the control node's actions.
+      - "BROADCAST: Peacemaker: intruder position confirmed."
+      - "BROADCAST: Peacemaker: intruder suspected."
+      - "BROADCAST: Peacemaker: attacked, fleeing."
+      - "BROADCAST: Dispatching assault squad."
+      - "BROADCAST: Command area compromised, requesting reinforcements."
+      - "BROADCAST: Failed to contact local relay: Timed out."
+      - "BROADCAST: Attempting to contact command warship."
+      - "BROADCAST: No response."
+    - Needs more downsides.
+      - Maybe: ugly purple/blue/green tint.
+      - Maybe: sets off alarm in garrisons, fortresses, ships instantly once
+        they enter. "Unregistered Tor Exoskeleton within local area, rogue
+        warrior suspected. Termination squads dispatched."
+        - Every squad activates and heads for player.
+        - Garrison: entrance doors stop functioning. Fortress: door is sealed
+          with barite.
+      - Maybe: all earth mobs run away from player (or attack in case of large
+        animals?). Includes NPC mobs. Requires fiddling with mobs_redo mob
+        registration info. Unsure if possible.
+      - Maybe: Phasic honor devices blow up when player gets too close? (with
+        HUD warning about unregistered exoskeleton and all.)
+      - Maybe: Hell Sentinel monsters switch to some kind of overpowered spell.
+        Earth mining is extra spicy :P Downside: why would player care, at this
+        point they are a demigod.
+      - Maybe: Player is now taller (say 2.2 nodes), will bang their head
+        everywhere. Seems like best option, since exoskeleton is changing player
+        model anyway.
+    - Note: HUD messages, especially broadcast messages that are coming from
+      control nodes in fortresses/garrisons, should convey sense of Tor robots
+      and systems screaming into the void -- doing their best to function
+      thousands of years after the disappearance or death of the Tor.
+  - Tor Longsword: very high fleshy damage, very high attack speed. Damage
+    reflection if possible. High knockback.
+  - Burning Lance: very high reach, very high burn damage, high fleshy damage.
+- Shear Cannons on medium ships. High knockback.
   - Medium range, high damage.
   - "The best information we can glean from incomprehensible weapon is that it
     somehow tears a thin slice of the fabric of space, and rotates it 90
@@ -183,13 +263,19 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
     have otherwise paid off. As of June 2025, our Standard Plasma Repeater --
     a low-powered version of this cannon -- has now entered mass production."
 - L-cannon on larger ships. Infinite penetration, instant damage, very high
-  range, 1000 thermal intensity (3 radius), immense power requirements
+  range, 500 thermal intensity (3 radius), immense power requirements
   (300kEU). Massive heat dissipation needs.
-  - "The short-lived research project on the L-cannon was a humbling
-    experience, not just because we couldn't provide half of the power
-    requirement for this medium Tor weapon, but also because its bewildering
-    internals defied any attempt to scan or catalog its functions. For this
-    reason, we advise BuckarooBanzai to surrender the server immediately
+  - Creates "plasma" nodes in destroyed areas, instead of air. 
+    - Spreads, maybe? to a maximum of three nodes.
+    - Lingers for maybe a minute, then decays into air.
+    - Burn damage and suffocation.
+  - "The short-lived research project on the L-cannon was a humbling experience,
+    not because we couldn't provide half of the power requirement for this
+    medium Tor weapon, but rather due to its bewildering internals defying any
+    attempt to scan or catalog its functions. Moreover, every eye-witness
+    account we have of this cannon in action points to it being unimaginably
+    powerful, far beyond the reach of humanity's current capabilities. For
+    this reason, we advise BuckarooBanzai to surrender the server immediately
     should the aliens come back to play with their toys."
 - Singularity Excitation Reactor
   - 2000kEU. Requires 30kEU, if disconnected from network or unable to meet
@@ -207,7 +293,7 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
     have long since decayed away. However, its remains have been very well
     preserved compared to the alien cadavers, and advanced dating techniques
     have allowed us to conclude that the alien ships began arriving here a mere
-    1000 years ago -- many thousands of years sooner than once thought."
+    1000 years ago -- many thousands of years more recent than once thought."
 - Phasic honor device
   - Self-destructor, nestled in with vital cable systems (but away from power
     system, which should explode anyway).
