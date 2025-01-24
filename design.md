@@ -155,6 +155,15 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
     network without properly powering down or unable to meet demand, will
     explode (10 intensity, 10 radius).
     - Leave some graviton flux fluid? Would be fun. What effects?
+      - Idea: items dropped in are destroyed, but have very very small chance to
+        create an orb of antimatter. This can be processed (very very slowly,
+        30+ minutes for a single orb) by a very rare machine into antimatter
+        fuel canisters for the Antimatter Reactor.
+        - Different version of same idea: very small chance to spawn a graviton
+          flare, a non-hostile mob that just hovers around and slowly rises into
+          the sky (and hurting any adjacent creature), but which drops the orb
+          on a very very rare chance.
+          - Idea for farm: dies when in contact with normality field.
     - Explodes when destroyed (by blast).
   - Weeping Orthire nodes as batteries.
     - Very difficult to mine, only drops the node some of the time, otherwise
@@ -300,3 +309,8 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
   - Absolutely massive low-intensity explosion (2 intensity, 18 radius).
   - Player better be careful if they have penetrating weapons or if they're just
     planning to blast the ship into submission.
+- Normality field
+  - Destroys shear{cannon, gun} projectiles, 100% of the time.
+  - Energy hungry and low radius, disabled by default on the ships. Intended
+    only for use by players.
+  - Destroys graviton flare (see graviton-flux fluid ideas above).

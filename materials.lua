@@ -6,6 +6,12 @@
 -- x Borium-reinforced Cable
 -- x Atomic Flux Cell
 -- * Electric Routing Device
+-- * LCD Screen + Log
+-- * Lpw. Intelligence Center
+-- * Antenna (damaged)
+-- * Signal regenerator (damaged)
+-- * Optical array (damaged)
+-- * Quantum entanglement comms
 --
 -- TODO (garrisons):
 -- * Ultra high voltage (UHV) tier
@@ -18,8 +24,8 @@
 --   * spacecannon_armor support
 --   * minetest.rotate_node
 
--- Engines. Flavor.
--- Non-idling demand is higher, but we don't tell the player that.
+-- Engines and other flavor nodes.
+-- Non-idling engine demand is higher, but we don't tell the player that.
 --
 minetest.register_node("tor:subspace_ion_thruster", {
     description = "Subspace Ion Thruster (alien)",
@@ -105,6 +111,110 @@ minetest.register_node("tor:subspace_ion_thruster_active", {
 technic.register_machine("HV", "tor:subspace_ion_thruster", technic.receiver)
 technic.register_machine("HV", "tor:subspace_ion_thruster_active", technic.receiver)
 
+minetest.register_node("tor:entangle_device", {
+    description = "Qntm Entanglement Comms Unit (alien)",
+    drawtype = "mesh",
+    mesh = "tor_entangle_device.obj",
+    tiles = { "digtron_plate.png" },
+    groups = { cracky = 2, oddly_breakable_by_hand = 2, technic_lv = 1, technic_machine = 1 },
+    drop = "tor:entangle_device",
+    connects_to = {"group:technic_lv_cable"},
+    connect_sides = {"bottom"},
+    on_construct = function(coord)
+        local meta = minetest.get_meta(coord)
+        meta:set_int("LV_EU_demand", 10)
+        minetest.add_entity(coord, "tor:entangle_containment")
+    end,
+    on_destruct = function(coord)
+        map_child_entity(coord, "tor:entangle_containment", function(obj) obj:remove() end)
+    end,
+    technic_run = function(coord)
+        local meta = minetest.get_meta(coord)
+        local eu_input = meta:get_int("LV_EU_input")
+        local demand = meta:get_int("LV_EU_demand")
+
+        if eu_input >= demand then
+            technic.swap_node(coord, "tor:entangle_device_active")
+            map_child_entity(coord, "tor:entangle_containment",
+                function(obj) obj:get_luaentity():make_spinny() end)
+            return
+        end
+
+        local infotext =
+            "Power: " .. eu_input .. "/" .. demand .. "\n" ..
+            "Unpowered.\n"
+        meta:set_string("infotext", infotext)
+    end,
+})
+minetest.register_node("tor:entangle_device_active", {
+    description = "Qntm Entanglement Comms Unit (alien)",
+    drawtype = "mesh",
+    mesh = "tor_entangle_device.obj",
+    tiles = { "digtron_plate.png" },
+    groups = { cracky = 2, oddly_breakable_by_hand = 2, technic_lv = 1, technic_machine = 1 },
+    drop = "tor:entangle_device",
+    light_source = 5,
+    paramtype = "light",
+    connects_to = {"group:technic_lv_cable"},
+    connect_sides = {"bottom"},
+    technic_disabled_machine_name = "tor:entangle_device",
+    on_destruct = function(coord)
+        map_child_entity(coord, "tor:entangle_containment", function(obj) obj:remove() end)
+    end,
+    technic_on_disable = function(coord)
+        map_child_entity(coord, "tor:entangle_containment",
+            function(obj) obj:get_luaentity():make_unspinny() end)
+    end,
+    technic_run = function(coord)
+        local meta = minetest.get_meta(coord)
+        local eu_input = meta:get_int("LV_EU_input")
+        local demand = meta:get_int("LV_EU_demand")
+
+        if eu_input < demand then
+            technic.swap_node(coord, "tor:entangle_device")
+            return
+        end
+
+        local infotext =
+            "Power: " .. eu_input .. "/" .. demand .. "\n" ..
+            "Cannot connect to remote control node: Timed out.\n" ..
+            "Last connect date: 19-Jun-1014"
+
+        meta:set_string("infotext", infotext)
+    end,
+})
+minetest.register_entity("tor:entangle_containment", {
+    initial_properties = {
+        visual = "mesh",
+        mesh = "tor_entangle_containment.glb",
+        textures = { "tor_entangle_containment.png" },
+        physical = false,
+        collide_with_objects = false,
+        pointable = false,
+    },
+    on_activate = function(self, _staticdata) self:make_unspinny() end,
+    make_spinny = function(self)
+        self.object:set_animation({x = 0, y = 72}, 1.0, 0, true)
+        self.object:set_properties({glow = 10})
+    end,
+    make_unspinny = function(self)
+        self.object:set_animation({x = 0, y = 72}, 0.1, 5, true)
+        self.object:set_properties({glow = 0})
+    end,
+})
+technic.register_machine("LV", "tor:entangle_device", technic.receiver)
+technic.register_machine("LV", "tor:entangle_device_active", technic.receiver)
+
+function map_child_entity(coord, name, func)
+    local objects = minetest.get_objects_inside_radius(coord, 1)
+    for _, obj in ipairs(objects) do
+        if obj:get_luaentity() and obj:get_luaentity().name == name then
+            func(obj)
+            return
+        end
+    end
+end
+
 -- Power.
 local AFC_SUPPLY         = 1500
 minetest.register_node("tor:atomic_flux_cell", {
@@ -131,7 +241,7 @@ minetest.register_node("tor:atomic_flux_cell", {
         local meta = minetest.get_meta(coord)
         local infotext =
             "Tor Atomic Flux Cell (active)\n" ..
-            "Generating: " .. AFC_SUPPLY
+            "Generating: " .. technic.EU_string(AFC_SUPPLY)
         meta:set_string("infotext", infotext)
     end,
 })
