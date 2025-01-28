@@ -11,7 +11,8 @@
 -- * Antenna (damaged)
 -- * Signal regenerator (damaged)
 -- * Optical array (damaged)
--- * Quantum entanglement comms
+-- x Quantum entanglement comms
+-- * Loafer
 --
 -- TODO (garrisons):
 -- * Ultra high voltage (UHV) tier
@@ -23,6 +24,8 @@
 --   * Pass damage type to on_blast
 --   * spacecannon_armor support
 --   * minetest.rotate_node
+
+local utils = tor.utils
 
 -- Engines and other flavor nodes.
 -- Non-idling engine demand is higher, but we don't tell the player that.
@@ -126,7 +129,7 @@ minetest.register_node("tor:entangle_device", {
         minetest.add_entity(coord, "tor:entangle_containment")
     end,
     on_destruct = function(coord)
-        map_child_entity(coord, "tor:entangle_containment", function(obj) obj:remove() end)
+        utils.map_child_entity(coord, "tor:entangle_containment", function(obj) obj:remove() end)
     end,
     technic_run = function(coord)
         local meta = minetest.get_meta(coord)
@@ -135,7 +138,7 @@ minetest.register_node("tor:entangle_device", {
 
         if eu_input >= demand then
             technic.swap_node(coord, "tor:entangle_device_active")
-            map_child_entity(coord, "tor:entangle_containment",
+            utils.map_child_entity(coord, "tor:entangle_containment",
                 function(obj) obj:get_luaentity():make_spinny() end)
             return
         end
@@ -159,10 +162,10 @@ minetest.register_node("tor:entangle_device_active", {
     connect_sides = {"bottom"},
     technic_disabled_machine_name = "tor:entangle_device",
     on_destruct = function(coord)
-        map_child_entity(coord, "tor:entangle_containment", function(obj) obj:remove() end)
+        utils.map_child_entity(coord, "tor:entangle_containment", function(obj) obj:remove() end)
     end,
     technic_on_disable = function(coord)
-        map_child_entity(coord, "tor:entangle_containment",
+        utils.map_child_entity(coord, "tor:entangle_containment",
             function(obj) obj:get_luaentity():make_unspinny() end)
     end,
     technic_run = function(coord)
@@ -205,15 +208,57 @@ minetest.register_entity("tor:entangle_containment", {
 technic.register_machine("LV", "tor:entangle_device", technic.receiver)
 technic.register_machine("LV", "tor:entangle_device_active", technic.receiver)
 
-function map_child_entity(coord, name, func)
-    local objects = minetest.get_objects_inside_radius(coord, 1)
-    for _, obj in ipairs(objects) do
-        if obj:get_luaentity() and obj:get_luaentity().name == name then
-            func(obj)
-            return
-        end
-    end
-end
+local D_LPW_INTELLIGENCE_CELL, D_LPW_INTELLIGENCE_CELL_ACTIVATED = utils.technify(
+    "tor:lpw_intelligence_cell",
+    {
+        description = "Lpw. Intelligence Cell (alien)",
+        tiles = {
+            "tor_lpw_intelligence_cell_top.png",
+            "tor_lpw_intelligence_cell_bottom.png^tor_cable_overlay.png",
+            "tor_lpw_intelligence_cell_side.png",
+            "tor_lpw_intelligence_cell_side.png",
+            "tor_lpw_intelligence_cell_bottom.png^tor_cable_overlay.png",
+            "tor_lpw_intelligence_cell_front.png",
+        },
+        groups = { cracky = 3, oddly_breakable_by_hand = 3 },
+        drop = "tor:lpw_intelligence_cell",
+        connect_sides = {"bottom"},
+        --on_place = minetest.rotate_node,
+        paramtype2 = "facedir",
+    },
+    {
+        tier = "LV", demand = 30,
+        activated_light = 3,
+        on_technic_run_enabled = function(coord, meta, eu_input)
+            local infotext =
+                "Low-powered Intelligence Cell\n" ..
+                "Power: " .. eu_input .. "/" .. 30 .. "\n" ..
+                "Catastrophic hardware failure."
+            meta:set_string("infotext", infotext)
+        end,
+    },
+    {
+        tiles = {
+            "tor_lpw_intelligence_cell_top.png",
+            "tor_lpw_intelligence_cell_bottom.png^tor_cable_overlay.png",
+            "tor_lpw_intelligence_cell_side.png",
+            "tor_lpw_intelligence_cell_side.png",
+            "tor_lpw_intelligence_cell_bottom.png^tor_cable_overlay.png",
+            {
+                name = "tor_lpw_intelligence_cell_front_active.png",
+                animation = {
+                    type = "vertical_frames",
+                    aspect_w = 32, aspect_h = 32,
+                    length = 5.0,
+                },
+            },
+        },
+    }
+)
+minetest.register_node("tor:lpw_intelligence_cell", D_LPW_INTELLIGENCE_CELL)
+minetest.register_node("tor:lpw_intelligence_cell_active", D_LPW_INTELLIGENCE_CELL_ACTIVATED)
+technic.register_machine("LV", "tor:lpw_intelligence_cell", technic.receiver)
+technic.register_machine("LV", "tor:lpw_intelligence_cell_active", technic.receiver)
 
 -- Power.
 local AFC_SUPPLY         = 1500

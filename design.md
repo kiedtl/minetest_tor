@@ -19,7 +19,12 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
       metal husk.
   - Optical arrays
   - Subspace thrusters, subspace antigrav.
-  - Very rarely, will contain a dormant robotic enemy. (TODO: which one?)
+  - Very rarely, will contain a dormant robotic enemy.
+    - G-38 Escort: grunts repurposed as drone guards.
+      - Pretty weak, low HP, almost no armor.
+      - It can hover though.
+      - Deployed by machine?
+      - "Live human active within protected area. Terminating.
 - Regular
   - Generator, cables.
   - Antennas.
@@ -139,17 +144,35 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
   - Electromagnetic projectile.
   - Hovers/flys. Scans player.
 - Companion:
+  - Extremely dangerous. Intelligent robot companion of the Tor.
   - Broadcast messages (see exoskeleton section):
-    - "I do not recognize your ID. Take me to your commander at once."
-    - "I have been waiting for an eternity. I do not know who you are."
-    - On death: "My master will return."
-  - Extremely dangerous. Robotic companion of the Tor.
-  - Dual-wielding shearguns. Low damage (just enough to hurt lava armor a bit)
+    - On spotting:
+        - "Your equipment belonged to a Commander. What did you do to him?"
+        - "I do not recognize your ID. Surrender and take me to your commander at once."
+        - "I have been waiting for an eternity. I do not know who you are."
+        - "You do not bear the identification of a true Tor Warrior."
+        - "My master was recalled and told to leave us behind. You will
+           surrender and bring me to him."
+        - "Every Warrior I ever knew is lying here. You will not disturb me."
+    - On death:
+      - "I know my master will return for me."
+      - "My master will surely return."
+      - "I believe my master will repair me."
+      - "My master will avenge my destruction."
+    - Player needs to feel like a monster after killing it.
+      - On death, maybe the player "splits it open" :P and some wires and
+        control systems are dropped.
+        - Enh. Intelligence Cell
+        - Adv. Memory Center (2x)
+        - Data Cables
+  - Dual-wielding shearguns. Low damage (just enough to hurt exoskeleton a tiny bit)
     but high fire rate.
+    - Of course, since it's shearing damage, with no exo (i.e. no shearing
+      protection) it'll have horrifying DPS.
   - Rare, fast, agile, constantly tracking player once sighted. Won't
     automatically track though, and not dispatched by squads.
   - High HP and high armor.
-  - Found near alien remains, moping around and being depressed.
+  - Found moping around alien remains, feeling sad and depressed.
 - Power
   - Graviton-flux Reactor. 5000kEU. Requires 200kEU, if disconnected from
     network without properly powering down or unable to meet demand, will
@@ -220,9 +243,8 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
         - "Thermal protection systems at suboptimal level."
       - 10%: jump and speed bonus stops.
         - "Complete destabilization imminent, emergency maneuvers strongly advised."
-      - Note: kinetic resistance never goes away, as does non-realistic vacuum
-        suffocation. This is intentional, it's an inherent part of the
-        exoskeleton design, i.e. a passive feature.
+      - Note: kinetic resistance never goes away. This is intentional, it's an
+        inherent part of the exoskeleton design, i.e. a passive feature.
     - Can now get "feedback" from garrison and fortress control nodes, that show
       up on HUD. i.e. a live log on the control node's actions.
       - "BROADCAST: Peacemaker: intruder position confirmed."
@@ -262,15 +284,15 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
 - Shear Cannons on medium ships. High knockback.
   - Medium range, high damage.
   - "The best information we can glean from incomprehensible weapon is that it
-    somehow tears a thin slice of the fabric of space, and rotates it 90
-    degrees in an effort to rip the target apart."
+    somehow tears a thin slice of the fabric of space, and continually rotates
+    it in an effort to rip the target apart."
   - High salvage (90%), low energy (20kEU).
 - Smaller ships will have Hellfire Pulsers (i.e. korath thermal repeaters from
   ES) and Neutron Cannons.
   - "We may never be able to match the heat dissipation systems required to
     keep the Pulser functioning, but out attempts to understand its design
-    have otherwise paid off. As of June 2025, our Standard Plasma Repeater --
-    a low-powered version of this cannon -- has now entered mass production."
+    have otherwise paid off. As of June 2025, our Plasma Streamer --
+    a low-powered version of this cannon -- has entered mass production."
 - L-cannon on larger ships. Infinite penetration, instant damage, very high
   range, 500 thermal intensity (3 radius), immense power requirements
   (300kEU). Massive heat dissipation needs.
