@@ -1,9 +1,11 @@
 local utils = tor.utils
 
-function shallow_clone(t)
-  local u = {}
-  for k, v in pairs(t) do u[k] = v end
-  return u
+function clone(t)
+    local u = {}
+    for k, v in pairs(t) do
+        u[k] = type(v) == "table" and clone(v) or v
+    end
+    return u
 end
 
 -- Create an "activated" and "unactivated" version of a machine definition.
@@ -19,13 +21,13 @@ function utils.technify(nodename, def, params, active_override)
 
     local on_construct = on_construct or function(coord, meta) end
 
-    local base_def = shallow_clone(def) -- Is this needed?
+    local base_def = clone(def) -- Is this needed?
     base_def.groups["technic_" .. ltier] = 1
     base_def.groups.technic_machine = 1
     base_def.drop = nodename
     base_def.connects_to = {"group:technic_" .. ltier .. "_cable"}
 
-    local unactivated = shallow_clone(base_def)
+    local unactivated = clone(base_def)
     unactivated.on_construct = function(coord)
         local meta = minetest.get_meta(coord)
         meta:set_int(params.tier .. "_EU_demand", params.demand)
@@ -43,7 +45,8 @@ function utils.technify(nodename, def, params, active_override)
         on_technic_run_disabled(coord, meta, eu_input)
     end
 
-    local activated = shallow_clone(base_def)
+    local activated = clone(base_def)
+    activated.groups.not_in_creative_inventory = 1
     activated.light_source = params.activated_light
     activated.paramtype = params.activated_light and "light" or nil
     activated.disabled_machine_name = nodename
