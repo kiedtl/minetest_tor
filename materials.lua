@@ -2,12 +2,9 @@
 -- x Subspace Ion Thruster
 -- * Subspace Antigrav
 -- x Composite Structure
--- * Borium-reinforced Glass
 -- x Borium-reinforced Cable
 -- x Atomic Flux Cell
--- * Electric Routing Device
--- * LCD Screen + Log
--- * Lpw. Intelligence Center
+-- x Lpw. Intelligence Center
 -- * Antenna (damaged)
 -- * Signal regenerator (damaged)
 -- * Optical array (damaged)
@@ -144,6 +141,7 @@ minetest.register_node("tor:entangle_device", {
         end
 
         local infotext =
+            "Quantum Entanglement Communications Unit\n" ..
             "Power: " .. eu_input .. "/" .. demand .. "\n" ..
             "Unpowered.\n"
         meta:set_string("infotext", infotext)
@@ -179,9 +177,10 @@ minetest.register_node("tor:entangle_device_active", {
         end
 
         local infotext =
-            "Power: " .. eu_input .. "/" .. demand .. "\n" ..
+            "Quantum Entanglement Communications Unit\n" ..
+            "Power: " .. eu_input .. "/" .. demand .. "\n\n" ..
             "Cannot connect to remote control node: Timed out.\n" ..
-            "Last connect date: 19-Jun-1014"
+            "Last connection: 4 days, 9 months, 1128 years ago."
 
         meta:set_string("infotext", infotext)
     end,
@@ -211,7 +210,7 @@ technic.register_machine("LV", "tor:entangle_device_active", technic.receiver)
 local D_LPW_INTELLIGENCE_CELL, D_LPW_INTELLIGENCE_CELL_ACTIVATED = utils.technify(
     "tor:lpw_intelligence_cell",
     {
-        description = "Lpw. Intelligence Cell (alien)",
+        description = "Lpw. Intelligence Cell (broken) (alien)",
         tiles = {
             "tor_lpw_intelligence_cell_top.png",
             "tor_lpw_intelligence_cell_bottom.png^tor_cable_overlay.png",
@@ -231,7 +230,7 @@ local D_LPW_INTELLIGENCE_CELL, D_LPW_INTELLIGENCE_CELL_ACTIVATED = utils.technif
         activated_light = 3,
         on_technic_run_enabled = function(coord, meta, eu_input)
             local infotext =
-                "Low-powered Intelligence Cell\n" ..
+                "Low-powered Intelligence Cell (broken)\n" ..
                 "Power: " .. eu_input .. "/" .. 30 .. "\n" ..
                 "Catastrophic hardware failure."
             meta:set_string("infotext", infotext)
