@@ -9,7 +9,7 @@
 -- * Signal regenerator (damaged)
 -- * Optical array (damaged)
 -- x Quantum entanglement comms
--- * Loafer
+-- * Escort
 --
 -- TODO (garrisons):
 -- * Ultra high voltage (UHV) tier
@@ -260,7 +260,7 @@ technic.register_machine("LV", "tor:lpw_intelligence_cell", technic.receiver)
 technic.register_machine("LV", "tor:lpw_intelligence_cell_active", technic.receiver)
 
 -- Power.
-local AFC_SUPPLY         = 1500
+local AFC_MAX_SUPPLY = 1500
 minetest.register_node("tor:atomic_flux_cell", {
     description = "Atomic Flux Cell (alien)",
     drawtype = "mesh",
@@ -279,17 +279,95 @@ minetest.register_node("tor:atomic_flux_cell", {
     connect_sides = {"bottom", "back" },
     on_construct = function(coord)
         local meta = minetest.get_meta(coord)
-        meta:set_int("HV_EU_supply", AFC_SUPPLY)
+        meta:set_int("HV_EU_supply", AFC_MAX_SUPPLY)
+        meta:set_int("_counter", 1)
+        meta:set_float("_variance", 0)
+        meta:set_int("_mode", -1)
     end,
+    -- For the varying power supply, we just have a cosine curve and add some
+    -- noise to it. The noise is an accumulating value that either goes up or
+    -- down depending on `mode`, which itself changes on a 60% chance.
+    --
     technic_run = function(coord)
         local meta = minetest.get_meta(coord)
+        local ctr = meta:get_int("_counter")
+        local mode = meta:get_int("_mode")
+        local var = meta:get_float("_variance")
+
+        if math.random() > 0.6 then
+            mode = math.random() > 0.5 and 1 or -1
+        end
+
+        var = var + (math.random() / 8 * mode)
+        local val = (math.cos(math.rad(ctr)) + var) * 10
+        local supply = math.min((AFC_MAX_SUPPLY * 3 / 4) + val, AFC_MAX_SUPPLY)
+
         local infotext =
             "Tor Atomic Flux Cell (active)\n" ..
-            "Generating: " .. technic.EU_string(AFC_SUPPLY)
+            "Generating: " .. technic.EU_string(supply) .. " / " .. technic.EU_string(AFC_MAX_SUPPLY)
         meta:set_string("infotext", infotext)
+
+        meta:set_int("HV_EU_supply", supply)
+        meta:set_int("_counter", ctr + 1 % 360)
+        meta:set_int("_mode", mode)
+        meta:set_float("_variance", var)
     end,
 })
 technic.register_machine("HV", "tor:atomic_flux_cell", technic.producer)
+
+local LEW_STORAGE = 4000
+local LEW_CHARGE_R = 100
+local LEW_DISCHARGE_R = 1000
+local LEW_ANIM = { type = "vertical_frames", aspect_w = 32, aspect_h = 32, length = 6.0 }
+minetest.register_node("tor:lpw_energy_well", {
+    description = "Lpw. Energy Well (alien)",
+    tiles = {
+        { name = "tor_lpw_energy_well.png", animation = LEW_ANIM },
+        { name = "tor_lpw_energy_well_static.png^tor_cable_overlay.png", animation = LEW_ANIM },
+        { name = "tor_lpw_energy_well.png", animation = LEW_ANIM },
+        { name = "tor_lpw_energy_well.png", animation = LEW_ANIM },
+        { name = "tor_lpw_energy_well.png", animation = LEW_ANIM },
+        { name = "tor_lpw_energy_well.png", animation = LEW_ANIM },
+    },
+    groups = {
+        cracky = 2, oddly_breakable_by_hand = 2,
+        technic_hv = 1, technic_machine = 1,
+    },
+    drop = "tor:lpw_energy_well",
+    connects_to = {"group:technic_hv_cable"},
+    connect_sides = {"bottom"},
+    on_construct = function(coord)
+        local meta = minetest.get_meta(coord)
+        meta:set_int("HV_EU_supply", LEW_DISCHARGE_R)
+        meta:set_int("_charge", 0)
+    end,
+    technic_run = function(coord, _node, _run_state, network)
+        local meta = minetest.get_meta(coord)
+        local eu_input = meta:get_int("HV_EU_input")
+        local charge = meta:get_int("_charge")
+
+        if eu_input >= 0 then
+            charge = math.min(charge + eu_input, LEW_STORAGE)
+        else
+            charge = math.max(charge + eu_input, 0)
+        end
+
+        local supply = math.min(LEW_DISCHARGE_R, charge)
+        local demand = math.min(LEW_CHARGE_R, LEW_STORAGE - charge)
+        network:update_battery(charge, LEW_STORAGE, supply, demand)
+
+        meta:set_int("HV_EU_demand", demand)
+        meta:set_int("HV_EU_supply", supply)
+        meta:set_int("_charge", charge)
+
+        local infotext =
+            "Low-power Energy Well\n" ..
+            "Weeping Orthire fragment stability is at optimal levels.\n\n" ..
+            "Storage: " .. technic.EU_string(charge) .. " / " .. technic.EU_string(LEW_STORAGE) .. "\n"
+        meta:set_string("infotext", infotext)
+    end,
+})
+technic.register_machine("HV", "tor:lpw_energy_well", technic.battery)
 
 -- Utility nodes.
 technic.register_cable("tor:borium_hv_cable", {
