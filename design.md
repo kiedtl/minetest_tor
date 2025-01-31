@@ -1,7 +1,16 @@
+# Additional Loot
+
+In addition to the loot described below, more loot can appear in chests as a
+reward for the player.
+
+- UHV furnaces, grinders, compressors.
+  - 2x speed (compared to HV equipment), but 3x energy usage.
+- UHV -> HV supply converter.
+
 # Tiers
 
-Four technology tiers will exist: drones (Earth), garrisons (Moon + Mars),
-fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
+Four technology tiers will exist: drones (Earth), garrisons (Moon + Mars, mostly
+Mars), fortresses (Moon + Mars, mostly Moon), and warships (Warzone).
 
 ## Drones
 - Exist on Earth. Mostly useless flavor equipment, except the light armor and
@@ -194,6 +203,7 @@ fortresses (Moon + Mars, mostly Mars), and warships (Warzone).
     - 8000kEU storage each. If drained below 10kEU, reverts to regular
       orthire. If demand is greater than 4 million EU, explodes (2 intensity,
       3 radius).
+    - Low charge rate, high discharge rate.
     - 4 resilience, decent armor (40% kinetic, 5% thermal, 90% shear).
   - Regular Orthire:
     - Very difficult to mine, but drops node each time.
