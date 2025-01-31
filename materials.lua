@@ -4,8 +4,9 @@
 -- x Composite Structure
 -- x Borium-reinforced Cable
 -- x Atomic Flux Cell
+-- x Lpw. Energy Well
 -- x Lpw. Intelligence Center
--- * Antenna (damaged)
+-- x Antenna (damaged)
 -- * Signal regenerator (damaged)
 -- * Optical array (damaged)
 -- x Quantum entanglement comms
@@ -226,12 +227,12 @@ local D_LPW_INTELLIGENCE_CELL, D_LPW_INTELLIGENCE_CELL_ACTIVATED = utils.technif
         paramtype2 = "facedir",
     },
     {
-        tier = "LV", demand = 30,
+        tier = "LV", demand = 60,
         activated_light = 3,
         on_technic_run_enabled = function(coord, meta, eu_input)
             local infotext =
                 "Low-powered Intelligence Cell (broken)\n" ..
-                "Power: " .. eu_input .. "/" .. 30 .. "\n" ..
+                "Power: " .. eu_input .. "/" .. 60 .. "\n" ..
                 "Catastrophic hardware failure."
             meta:set_string("infotext", infotext)
         end,
@@ -258,6 +259,36 @@ minetest.register_node("tor:lpw_intelligence_cell", D_LPW_INTELLIGENCE_CELL)
 minetest.register_node("tor:lpw_intelligence_cell_active", D_LPW_INTELLIGENCE_CELL_ACTIVATED)
 technic.register_machine("LV", "tor:lpw_intelligence_cell", technic.receiver)
 technic.register_machine("LV", "tor:lpw_intelligence_cell_active", technic.receiver)
+
+local D_ANTENNA, D_ANTENNA_ACTIVATED = utils.technify(
+    "tor:antenna",
+    {
+        description = "Local Antenna (broken) (alien)",
+        tiles = { "tor_antenna.png" },
+        use_texture_alpha = "clip",
+        drawtype = "mesh",
+        mesh = "tor_antenna.obj",
+        groups = { cracky = 3, oddly_breakable_by_hand = 3 },
+        drop = "tor:antenna",
+        connect_sides = {"bottom"},
+        paramtype2 = "facedir",
+    },
+    {
+        tier = "LV", demand = 30,
+        on_technic_run_enabled = function(coord, meta, eu_input)
+            local infotext =
+                "Antenna (broken)\n" ..
+                "Power: " .. eu_input .. "/" .. 30 .. "\n" ..
+                "Subantenna device error: I2C failed to initialize."
+            meta:set_string("infotext", infotext)
+        end,
+    },
+    { }
+)
+minetest.register_node("tor:antenna", D_ANTENNA)
+minetest.register_node("tor:antenna_active", D_ANTENNA_ACTIVATED)
+technic.register_machine("LV", "tor:antenna", technic.receiver)
+technic.register_machine("LV", "tor:antenna_active", technic.receiver)
 
 -- Power.
 local AFC_MAX_SUPPLY = 1500

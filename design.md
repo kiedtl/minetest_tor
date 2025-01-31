@@ -186,6 +186,12 @@ Mars), fortresses (Moon + Mars, mostly Moon), and warships (Warzone).
   - Graviton-flux Reactor. 5000kEU. Requires 200kEU, if disconnected from
     network without properly powering down or unable to meet demand, will
     explode (10 intensity, 10 radius).
+    - Idea: Produce power in bursts, and produce nothing in between. Will
+      complicate formspec design.
+      - Adds a strong downside, to pair with its otherwise high qualities. Now
+        the 200kEU requirement is a real challenge. For the fortress it'll be
+        fine, since there are WO battery arrays everywhere, but for the player
+        it'll be a big deal.
     - Leave some graviton flux fluid? Would be fun. What effects?
       - Idea: items dropped in are destroyed, but have very very small chance to
         create an orb of antimatter. This can be processed (very very slowly,
