@@ -1,6 +1,8 @@
 -- TODO (drones):
 -- x Subspace Ion Thruster
 -- * Subspace Antigrav
+--   * Superheated plasma
+--   * Plasma
 -- x Composite Structure
 -- x Borium-reinforced Cable
 -- x Atomic Flux Cell
@@ -480,3 +482,105 @@ minetest.register_node("tor:composite_block", {
 --    paramtype2 = "facedir",
 --})
 --technic.register_machine("HV", "tor:borium_regen", technic:receiver)
+
+-- Misc.
+minetest.register_node("tor:superheated_plasma", {
+    description = "Superheated Plasma",
+    tiles = { "tor_plasma.png^[colorize:#F0D08099" },
+    drop = "",
+    drowning = 1,
+    groups = { cracky = 2, not_in_creative_inventory = 1, igniter = 1 },
+    paramtype2 = "light",
+    light_source = minetest.LIGHT_MAX,
+    sunlight_propagates = true,
+    walkable = false,
+    pointable = false,
+    diggable = false,
+    buildable_to = true,
+    drawtype = "glasslike",
+    post_effect_color = { a = 20, r = 90, g = 35, b = 20 },
+    alpha = 0.1,
+    glow = 10,
+    damage_per_second = 4 * 2, -- Same as lava
+
+    on_construct = function(pos)
+        minetest.get_node_timer(pos):start(math.random() * 4)
+    end,
+
+    on_timer = function(coord)
+        minetest.set_node(coord, { name = "tor:plasma" })
+    end
+})
+
+minetest.register_node("tor:plasma", {
+    description = "Plasma",
+    tiles = { "tor_plasma.png^[colorize:#D0905060" },
+    drop = "",
+    drowning = 1,
+    groups = { cracky = 2, not_in_creative_inventory = 1, igniter = 1 },
+    paramtype2 = "light",
+    light_source = 8,
+    sunlight_propagates = true,
+    walkable = false,
+    pointable = false,
+    diggable = false,
+    buildable_to = true,
+    drawtype = "glasslike",
+    post_effect_color = { a = 20, r = 70, g = 25, b = 20 },
+    alpha = 0.1,
+    glow = 10,
+    damage_per_second = 2 * 2,
+
+    on_construct = function(pos)
+        minetest.get_node_timer(pos):start(math.random() * 5)
+    end,
+
+    on_timer = function(coord)
+        minetest.set_node(coord, { name = "air" })
+    end
+})
+
+minetest.register_abm({
+    label = "Superheated Plasma Flow",
+    nodenames = {"tor:superheated_plasma"},
+    interval = 0.5,
+    chance = 1,
+
+    action = function(coord, node)
+        local neighbors = {
+            -- Above
+            { x = coord.x - 1, y = coord.y + 1, z = coord.z - 1 },
+            { x = coord.x + 0, y = coord.y + 1, z = coord.z - 1 },
+            { x = coord.x + 1, y = coord.y + 1, z = coord.z - 1 },
+            { x = coord.x - 1, y = coord.y + 1, z = coord.z,    },
+            { x = coord.x,     y = coord.y + 1, z = coord.z,    },
+            { x = coord.x + 1, y = coord.y + 1, z = coord.z,    },
+            { x = coord.x - 1, y = coord.y + 1, z = coord.z + 1 },
+            { x = coord.x,     y = coord.y + 1, z = coord.z + 1 },
+            { x = coord.x + 1, y = coord.y + 1, z = coord.z + 1 },
+            -- Same y-level
+            { x = coord.x - 1, y = coord.y,     z = coord.z - 1 },
+            { x = coord.x + 0, y = coord.y,     z = coord.z - 1 },
+            { x = coord.x + 1, y = coord.y,     z = coord.z - 1 },
+            { x = coord.x - 1, y = coord.y,     z = coord.z,    },
+            { x = coord.x,     y = coord.y,     z = coord.z,    },
+            { x = coord.x + 1, y = coord.y,     z = coord.z,    },
+            { x = coord.x - 1, y = coord.y,     z = coord.z + 1 },
+            { x = coord.x,     y = coord.y,     z = coord.z + 1 },
+            { x = coord.x + 1, y = coord.y,     z = coord.z + 1 },
+        }
+        local propagated = false
+        for _, neighbor in ipairs(neighbors) do
+            local node = minetest.get_node_or_nil(neighbor)
+            if node and (node.name == "air" or node.name == "vacuum:vacuum") and math.random() > 0.4 then
+                local name = "tor:plasma"
+                if math.random() > 0.8 and not propagated then
+                    name = "tor:superheated_plasma"
+                    minetest.set_node(coord, { name = "air" })
+                    propagated = true
+                end
+                minetest.set_node(neighbor, { name = name })
+            end
+        end
+    end
+})
