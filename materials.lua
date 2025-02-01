@@ -114,80 +114,59 @@ minetest.register_node("tor:subspace_ion_thruster_active", {
 technic.register_machine("HV", "tor:subspace_ion_thruster", technic.receiver)
 technic.register_machine("HV", "tor:subspace_ion_thruster_active", technic.receiver)
 
-minetest.register_node("tor:entangle_device", {
-    description = "Qntm Entanglement Comms Unit (alien)",
-    drawtype = "mesh",
-    mesh = "tor_entangle_device.obj",
-    tiles = { "digtron_plate.png" },
-    groups = { cracky = 2, oddly_breakable_by_hand = 2, technic_lv = 1, technic_machine = 1 },
-    drop = "tor:entangle_device",
-    connects_to = {"group:technic_lv_cable"},
-    connect_sides = {"bottom"},
-    on_construct = function(coord)
-        local meta = minetest.get_meta(coord)
-        meta:set_int("LV_EU_demand", 10)
-        minetest.add_entity(coord, "tor:entangle_containment")
-    end,
-    on_destruct = function(coord)
-        utils.map_child_entity(coord, "tor:entangle_containment", function(obj) obj:remove() end)
-    end,
-    technic_run = function(coord)
-        local meta = minetest.get_meta(coord)
-        local eu_input = meta:get_int("LV_EU_input")
-        local demand = meta:get_int("LV_EU_demand")
-
-        if eu_input >= demand then
-            technic.swap_node(coord, "tor:entangle_device_active")
+local D_ENTANGLE, D_ENTANGLE_ACTIVATED = utils.technify(
+    "tor:entangle_device",
+    {
+        description = "Qntm Entanglement Comms Unit (alien)",
+        drawtype = "mesh",
+        mesh = "tor_entangle_device.obj",
+        tiles = { "digtron_plate.png" },
+        groups = { cracky = 2, oddly_breakable_by_hand = 2 },
+        connect_sides = {"bottom"},
+        on_destruct = function(coord)
+            utils.map_child_entity(coord, "tor:entangle_containment", function(obj) obj:remove() end)
+        end,
+    },
+    {
+        tier = "LV",
+        activated_light = 5,
+        demand = 10,
+        on_construct = function(coord)
+            minetest.add_entity(coord, "tor:entangle_containment")
+        end,
+        on_activated = function(coord, _meta)
             utils.map_child_entity(coord, "tor:entangle_containment",
                 function(obj) obj:get_luaentity():make_spinny() end)
-            return
-        end
+        end,
+        on_technic_run_disabled = function(coord, meta, eu_input)
+            local infotext =
+                "Quantum Entanglement Communications Unit\n" ..
+                "Power: " .. eu_input .. "/" .. 10 .. "\n" ..
+                "Unpowered.\n"
+            meta:set_string("infotext", infotext)
+        end,
+        on_technic_run_enabled = function(coord, meta, eu_input)
+            local infotext =
+                "Quantum Entanglement Communications Unit\n" ..
+                "Power: " .. eu_input .. "/" .. 10 .. "\n\n" ..
+                "Cannot connect to remote control node: Timed out.\n" ..
+                "Last connection: 4 days, 9 months, 1128 years ago."
 
-        local infotext =
-            "Quantum Entanglement Communications Unit\n" ..
-            "Power: " .. eu_input .. "/" .. demand .. "\n" ..
-            "Unpowered.\n"
-        meta:set_string("infotext", infotext)
-    end,
-})
-minetest.register_node("tor:entangle_device_active", {
-    description = "Qntm Entanglement Comms Unit (alien)",
-    drawtype = "mesh",
-    mesh = "tor_entangle_device.obj",
-    tiles = { "digtron_plate.png" },
-    groups = { cracky = 2, oddly_breakable_by_hand = 2, technic_lv = 1, technic_machine = 1 },
-    drop = "tor:entangle_device",
-    light_source = 5,
-    paramtype = "light",
-    connects_to = {"group:technic_lv_cable"},
-    connect_sides = {"bottom"},
-    technic_disabled_machine_name = "tor:entangle_device",
-    on_destruct = function(coord)
-        utils.map_child_entity(coord, "tor:entangle_containment", function(obj) obj:remove() end)
-    end,
-    technic_on_disable = function(coord)
-        utils.map_child_entity(coord, "tor:entangle_containment",
-            function(obj) obj:get_luaentity():make_unspinny() end)
-    end,
-    technic_run = function(coord)
-        local meta = minetest.get_meta(coord)
-        local eu_input = meta:get_int("LV_EU_input")
-        local demand = meta:get_int("LV_EU_demand")
+            meta:set_string("infotext", infotext)
+        end,
+    },
+    {
+        technic_on_disable = function(coord)
+            utils.map_child_entity(coord, "tor:entangle_containment",
+                function(obj) obj:get_luaentity():make_unspinny() end)
+        end,
+    }
+)
+minetest.register_node("tor:entangle_device", D_ENTANGLE)
+minetest.register_node("tor:entangle_device_active", D_ENTANGLE_ACTIVATED)
+technic.register_machine("LV", "tor:entangle_device", technic.receiver)
+technic.register_machine("LV", "tor:entangle_device_active", technic.receiver)
 
-        if eu_input < demand then
-            technic.swap_node(coord, "tor:entangle_device")
-            return
-        end
-
-        local infotext =
-            "Quantum Entanglement Communications Unit\n" ..
-            "Power: " .. eu_input .. "/" .. demand .. "\n\n" ..
-            "Cannot connect to remote control node: Timed out.\n" ..
-            "Last connection: 4 days, 9 months, 1128 years ago."
-
-        meta:set_string("infotext", infotext)
-    end,
-})
 minetest.register_entity("tor:entangle_containment", {
     initial_properties = {
         visual = "mesh",
@@ -207,8 +186,6 @@ minetest.register_entity("tor:entangle_containment", {
         self.object:set_properties({glow = 0})
     end,
 })
-technic.register_machine("LV", "tor:entangle_device", technic.receiver)
-technic.register_machine("LV", "tor:entangle_device_active", technic.receiver)
 
 local D_LPW_INTELLIGENCE_CELL, D_LPW_INTELLIGENCE_CELL_ACTIVATED = utils.technify(
     "tor:lpw_intelligence_cell",

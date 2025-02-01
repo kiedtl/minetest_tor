@@ -19,7 +19,8 @@ function utils.technify(nodename, def, params, active_override)
         meta:set_string("infotext", infotext)
     end
 
-    local on_construct = on_construct or function(coord, meta) end
+    local on_construct = params.on_construct or function(coord, meta) end
+    local on_activated = params.on_activated or function(coord, meta) end
 
     local base_def = clone(def) -- Is this needed?
     base_def.groups["technic_" .. ltier] = 1
@@ -39,6 +40,7 @@ function utils.technify(nodename, def, params, active_override)
 
         if eu_input >= params.demand then
             technic.swap_node(coord, nodename .. "_active")
+            on_activated(coord, meta)
             return
         end
 
