@@ -12,7 +12,7 @@ end
 function utils.technify(nodename, def, params, active_override)
     local ltier = params.tier:lower()
 
-    local on_technic_run_disabled = on_technic_run_disabled or function(coord, meta, eu_input)
+    local on_technic_run_disabled = params.on_technic_run_disabled or function(coord, meta, eu_input)
         local infotext =
             "Power: " .. eu_input .. "/" .. params.demand .. "\n" ..
             "Unpowered.\n"
@@ -36,7 +36,7 @@ function utils.technify(nodename, def, params, active_override)
     end
     unactivated.technic_run = function(coord)
         local meta = minetest.get_meta(coord)
-        local eu_input = meta:get_int("LV_EU_input")
+        local eu_input = meta:get_int(params.tier .. "_EU_input")
 
         if eu_input >= params.demand then
             technic.swap_node(coord, nodename .. "_active")
@@ -54,7 +54,7 @@ function utils.technify(nodename, def, params, active_override)
     activated.disabled_machine_name = nodename
     activated.technic_run = function(coord)
         local meta = minetest.get_meta(coord)
-        local eu_input = meta:get_int("LV_EU_input")
+        local eu_input = meta:get_int(params.tier .. "_EU_input")
 
         if eu_input < params.demand then
             technic.swap_node(coord, nodename)

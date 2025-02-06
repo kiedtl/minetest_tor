@@ -114,57 +114,73 @@ minetest.register_node("tor:subspace_ion_thruster_active", {
 technic.register_machine("HV", "tor:subspace_ion_thruster", technic.receiver)
 technic.register_machine("HV", "tor:subspace_ion_thruster_active", technic.receiver)
 
--- local D_SUBSPACE_ANTIGRAV, D_SUBSPACE_ANTIGRAV_ACTIVATED = utils.technify(
---     "tor:subspace_antigrav",
---     {
---         description = "Subspace Antigrav (alien)",
---         tiles = { "tor_subspace_antigrav.png" },
---         groups = { cracky = 1 },
---         connect_sides = {"top"},
---     },
---     {
---         tier = "HV",
---         activated_light = 12,
---         demand = 800,
---         on_technic_run_disabled = function(coord, meta, eu_input)
---             local infotext =
---                 "Subspace Antigrav\n" ..
---                 "Power: " .. eu_input .. "/" .. 800 .. "\n" ..
---                 "Unpowered.\n"
---             meta:set_string("infotext", infotext)
---         end,
---         on_technic_run_enabled = function(coord, meta, eu_input)
---             local infotext =
---                 "Subspace Antigrav\n" ..
---                 "Power: " .. eu_input .. "/" .. 800 .. "\n\n"
---             meta:set_string("infotext", infotext)
+local D_SUBSPACE_ANTIGRAV, D_SUBSPACE_ANTIGRAV_ACTIVATED = utils.technify(
+    "tor:subspace_antigrav",
+    {
+        description = "Subspace Antigrav (alien)",
+        tiles = { "digtron_plate.png" },
+        groups = { cracky = 1 },
+        connect_sides = {"top"},
+        drawtype = "nodebox",
+        node_box = {
+            type = "fixed",
+            fixed = {0.5,0.5,0.5,-0.5,-0.3,-0.5}
+        },
+        collision_box = {
+            type = "fixed",
+            fixed = {0.5,0.5,0.5,-0.5,-0.3,-0.5}
+        },
+        selection_box = {
+            type = "fixed",
+            fixed = {0.5,0.5,0.5,-0.5,-0.3,-0.5}
+        },
+    },
+    {
+        tier = "HV",
+        activated_light = 12,
+        demand = 400,
+        on_technic_run_disabled = function(coord, meta, eu_input)
+            local infotext =
+                "Subspace Antigrav\n" ..
+                "Power: " .. eu_input .. "/" .. 400 .. "\n" ..
+                "Unpowered.\n"
+            meta:set_string("infotext", infotext)
+        end,
+        on_technic_run_enabled = function(coord, meta, eu_input)
+            local infotext =
+                "Subspace Antigrav\n" ..
+                "Power: " .. eu_input .. "/" .. 400 .. "\n\n"
+            meta:set_string("infotext", infotext)
 
---             if math.random() > 0.8 then
---                 return
---             end
+            if math.random() > 0.85 then
+                return
+            end
 
---             local plasma = {
---                 { x = coord.x, y = coord.y - 1, z = coord.z },
---                 { x = coord.x, y = coord.y - 2, z = coord.z },
---             }
+            local plasma = {
+                { x = coord.x, y = coord.y - 1, z = coord.z },
+                { x = coord.x, y = coord.y - 2, z = coord.z },
+                { x = coord.x, y = coord.y - 3, z = coord.z },
+            }
 
---             for i, neighbors in ipairs(plasma) do
---                 local node = minetest.get_node_or_nil(neighbor)
---                 if node and (node.name == "air" or node.name == "vacuum:vacuum")
---                     and math.random() > 0.6
---                 then
---                     local t = math.random() > 0.5 and "superheated_" or ""
---                     minetest.set_node(coord, { name = "tor:" .. t .. "plasma" })
---                 end
---             end
---         end,
---     },
---     {}
--- )
--- minetest.register_node("tor:subspace_ion_antigrav", D_SUBSPACE_ANTIGRAV)
--- minetest.register_node("tor:subspace_ion_antigrav_active", D_SUBSPACE_ANTIGRAV_ACTIVATED)
--- technic.register_machine("HV", "tor:subspace_ion_antigrav", technic.receiver)
--- technic.register_machine("HV", "tor:subspace_ion_antigrav_active", technic.receiver)
+            for _, neighbor in ipairs(plasma) do
+                local node = minetest.get_node_or_nil(neighbor)
+                if node and (node.name == "air" or node.name == "vacuum:vacuum")
+                    and math.random() > 0.6
+                then
+                    local t = math.random() > 0.8 and "superheated_" or ""
+                    minetest.set_node(neighbor, { name = "tor:" .. t .. "plasma" })
+                else
+                    break -- Don't disconnect the plasma column
+                end
+            end
+        end,
+    },
+    {}
+)
+minetest.register_node("tor:subspace_antigrav", D_SUBSPACE_ANTIGRAV)
+minetest.register_node("tor:subspace_antigrav_active", D_SUBSPACE_ANTIGRAV_ACTIVATED)
+technic.register_machine("HV", "tor:subspace_antigrav", technic.receiver)
+technic.register_machine("HV", "tor:subspace_antigrav_active", technic.receiver)
 
 local D_ENTANGLE, D_ENTANGLE_ACTIVATED = utils.technify(
     "tor:entangle_device",
@@ -370,7 +386,7 @@ technic.register_machine("LV", "tor:optics", technic.receiver)
 technic.register_machine("LV", "tor:optics_active", technic.receiver)
 
 -- Power.
-local AFC_MAX_SUPPLY = 1500
+local AFC_MAX_SUPPLY = 3500
 minetest.register_node("tor:atomic_flux_cell", {
     description = "Atomic Flux Cell (alien)",
     drawtype = "mesh",
@@ -410,7 +426,7 @@ minetest.register_node("tor:atomic_flux_cell", {
 
         var = var + (math.random() / 8 * mode)
         local val = (math.cos(math.rad(ctr)) + var) * 10
-        local supply = math.min((AFC_MAX_SUPPLY * 3 / 4) + val, AFC_MAX_SUPPLY)
+        local supply = math.min((AFC_MAX_SUPPLY * 4 / 5) + val, AFC_MAX_SUPPLY)
 
         local infotext =
             "Tor Atomic Flux Cell (active)\n" ..
@@ -473,7 +489,8 @@ minetest.register_node("tor:lpw_energy_well", {
         local infotext =
             "Low-power Energy Well\n" ..
             "Weeping Orthire fragment stability is at optimal levels.\n\n" ..
-            "Storage: " .. technic.EU_string(charge) .. " / " .. technic.EU_string(LEW_STORAGE) .. "\n"
+            "Storage: " .. technic.EU_string(charge) .. " / " .. technic.EU_string(LEW_STORAGE) .. "\n" ..
+            "Supply: " .. technic.EU_string(supply) .. "\n"
         meta:set_string("infotext", infotext)
     end,
 })
