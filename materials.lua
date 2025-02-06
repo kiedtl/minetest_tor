@@ -1,8 +1,8 @@
 -- TODO (drones):
 -- x Subspace Ion Thruster
 -- * Subspace Antigrav
---   * Superheated plasma
---   * Plasma
+--   x Superheated plasma
+--   x Plasma
 -- x Composite Structure
 -- x Borium-reinforced Cable
 -- x Atomic Flux Cell
@@ -10,7 +10,7 @@
 -- x Lpw. Intelligence Center
 -- x Antenna (damaged)
 -- * Signal regenerator (damaged)
--- * Optical array (damaged)
+-- x Optical array (damaged)
 -- x Quantum entanglement comms
 -- * Escort
 --
@@ -113,6 +113,58 @@ minetest.register_node("tor:subspace_ion_thruster_active", {
 })
 technic.register_machine("HV", "tor:subspace_ion_thruster", technic.receiver)
 technic.register_machine("HV", "tor:subspace_ion_thruster_active", technic.receiver)
+
+-- local D_SUBSPACE_ANTIGRAV, D_SUBSPACE_ANTIGRAV_ACTIVATED = utils.technify(
+--     "tor:subspace_antigrav",
+--     {
+--         description = "Subspace Antigrav (alien)",
+--         tiles = { "tor_subspace_antigrav.png" },
+--         groups = { cracky = 1 },
+--         connect_sides = {"top"},
+--     },
+--     {
+--         tier = "HV",
+--         activated_light = 12,
+--         demand = 800,
+--         on_technic_run_disabled = function(coord, meta, eu_input)
+--             local infotext =
+--                 "Subspace Antigrav\n" ..
+--                 "Power: " .. eu_input .. "/" .. 800 .. "\n" ..
+--                 "Unpowered.\n"
+--             meta:set_string("infotext", infotext)
+--         end,
+--         on_technic_run_enabled = function(coord, meta, eu_input)
+--             local infotext =
+--                 "Subspace Antigrav\n" ..
+--                 "Power: " .. eu_input .. "/" .. 800 .. "\n\n"
+--             meta:set_string("infotext", infotext)
+
+--             if math.random() > 0.8 then
+--                 return
+--             end
+
+--             local plasma = {
+--                 { x = coord.x, y = coord.y - 1, z = coord.z },
+--                 { x = coord.x, y = coord.y - 2, z = coord.z },
+--             }
+
+--             for i, neighbors in ipairs(plasma) do
+--                 local node = minetest.get_node_or_nil(neighbor)
+--                 if node and (node.name == "air" or node.name == "vacuum:vacuum")
+--                     and math.random() > 0.6
+--                 then
+--                     local t = math.random() > 0.5 and "superheated_" or ""
+--                     minetest.set_node(coord, { name = "tor:" .. t .. "plasma" })
+--                 end
+--             end
+--         end,
+--     },
+--     {}
+-- )
+-- minetest.register_node("tor:subspace_ion_antigrav", D_SUBSPACE_ANTIGRAV)
+-- minetest.register_node("tor:subspace_ion_antigrav_active", D_SUBSPACE_ANTIGRAV_ACTIVATED)
+-- technic.register_machine("HV", "tor:subspace_ion_antigrav", technic.receiver)
+-- technic.register_machine("HV", "tor:subspace_ion_antigrav_active", technic.receiver)
 
 local D_ENTANGLE, D_ENTANGLE_ACTIVATED = utils.technify(
     "tor:entangle_device",
@@ -269,6 +321,54 @@ minetest.register_node("tor:antenna_active", D_ANTENNA_ACTIVATED)
 technic.register_machine("LV", "tor:antenna", technic.receiver)
 technic.register_machine("LV", "tor:antenna_active", technic.receiver)
 
+local D_OPTICS, D_OPTICS_ACTIVATED = utils.technify(
+    "tor:optics",
+    {
+        description = "Optical Array (broken) (alien)",
+        tiles = {
+            "digtron_plate.png",
+            "digtron_plate.png",
+            "digtron_plate.png",
+            "digtron_plate.png",
+            "digtron_plate.png^tor_cable_overlay.png",
+            "tor_optics.png",
+        },
+        drawtype = "nodebox",
+        node_box = {
+            type = "fixed",
+            fixed = {0.5,0.5,0.5,-0.5,-0.5,-0.1}
+        },
+        collision_box = {
+            type = "fixed",
+            fixed = {0.5,0.5,0.5,-0.5,-0.5,-0.1}
+        },
+        selection_box = {
+            type = "fixed",
+            fixed = {0.5,0.5,0.5,-0.5,-0.5,-0.1}
+        },
+        groups = { cracky = 3, oddly_breakable_by_hand = 3 },
+        drop = "tor:optics",
+        connect_sides = {"back"},
+        paramtype2 = "facedir",
+        on_place = minetest.rotate_node,
+    },
+    {
+        tier = "LV", demand = 15,
+        on_technic_run_enabled = function(coord, meta, eu_input)
+            local infotext =
+                "Optical Array (broken)\n" ..
+                "Power: " .. eu_input .. "/" .. 15 .. "\n" ..
+                "Catastrophic hardware failure: optical nodes not responding."
+            meta:set_string("infotext", infotext)
+        end,
+    },
+    { }
+)
+minetest.register_node("tor:optics", D_OPTICS)
+minetest.register_node("tor:optics_active", D_OPTICS_ACTIVATED)
+technic.register_machine("LV", "tor:optics", technic.receiver)
+technic.register_machine("LV", "tor:optics_active", technic.receiver)
+
 -- Power.
 local AFC_MAX_SUPPLY = 1500
 minetest.register_node("tor:atomic_flux_cell", {
@@ -402,6 +502,32 @@ technic.register_cable("tor:borium_hv_cable", {
     sunlight_propagates = false,
     size = 0.5,
     tier = "HV",
+    wield_image = false,
+    inventory_image = false,
+})
+
+technic.register_cable("tor:borium_lv_cable", {
+    description = "Borium-reinforced LV Cable (alien)",
+    tiles = { "tor_borium_lv_cable.png" },
+    groups = { cracky = 2, technic_lv_cable = 1 },
+    spacecannon_armor = { thermal = 75, kinetic = 60, shearing = 90 },
+    drop = "tor:borium_lv_cable",
+    connects_to = {"group:technic_lv_cable", "group:technic_lv", "group:technic_all_tiers"},
+    on_construct = function(coord)
+        local meta = minetest.get_meta(coord)
+        meta:set_float("integrity", 4)
+        technic.place_network_node(coord, {"LV"}, "tor:borium_lv_cable")
+    end,
+    on_destruct = function(coord)
+        technic.remove_network_node(coord, {"LV"}, "tor:borium_lv_cable")
+    end,
+    on_blast = tor.logic.on_blast,
+
+    -- register_table specific stuff
+    paramtype = "", -- Otherwise this function sets it to "light"
+    sunlight_propagates = false,
+    size = 0.5,
+    tier = "LV",
     wield_image = false,
     inventory_image = false,
 })
